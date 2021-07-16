@@ -3,7 +3,7 @@ import telebot
 from telebot import types
 from tokens import *  # my owm tokens in another file
 from IndividualID import *
-
+from ongoing import *
 
 owm = pyowm.OWM(owm_token)
 bot = telebot.TeleBot(bot_token)  # @appvenderbot
@@ -124,6 +124,16 @@ def talk(message):
     elif "ля ты крыса" in (str.lower(message.text)):
         bot.send_message(message.chat.id, "А может ты крыса?")
 
+    elif "онгоинг" in (str.lower(message.text)):
+        anime = types.InlineKeyboardMarkup(row_width=2)
+        item1 = types.InlineKeyboardButton("Да", callback_data='yes')
+        item2 = types.InlineKeyboardButton("Нет", callback_data='no')
+
+        anime.add(item1, item2)
+
+        bot.send_message(
+            message.chat.id, "Показать список аниме онгоингов?", reply_markup=anime)
+
     else:
         bot.send_message(message.chat.id, "Я не знаю что ответить...")
 
@@ -187,6 +197,26 @@ def calback_inline(call):
 
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
                                   text="У меня всё отлично)\nА ты как?", reply_markup=None)
+
+    except Exception as e:
+        print(repr(e))
+
+
+@bot.callback_query_handler(func=lambda call: call.data == 'yes' or call.data == 'no')
+def calback_inline(call):
+    try:
+        if call.message:
+            if call.data == 'yes':
+                bot.send_message(call.message.chat.id, "Одну секунду ...")
+
+                for i in ongoing(1):
+                    bot.send_message(call.message.chat.id, i)
+
+            elif call.data == 'no':
+                bot.send_message(call.message.chat.id, "Ну ладно :(")
+
+            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                                  text="Показать список аниме онгоингов?", reply_markup=None)
 
     except Exception as e:
         print(repr(e))
