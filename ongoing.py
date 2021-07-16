@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 res = []
 
 
-def ongoing(pages):
+def ongoing_all(pages):
     page = pages
 
     while True:
@@ -23,5 +23,21 @@ def ongoing(pages):
         else:
             break
         page += 1
+
+    return res
+
+
+def ongoing(pages):
+    page = pages
+
+    url = 'https://animevost.am/ongoing/page/' + str(page) + "/"
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    names = soup.find_all('div', class_='shortstoryHead')
+
+    for el in names:
+        h = el.find('h2')
+        name = h.find('a')
+        res.append(name.text + '\n')
 
     return res

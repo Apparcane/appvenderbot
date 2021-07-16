@@ -1,5 +1,6 @@
 import pyowm
 import telebot
+from time import sleep
 from telebot import types
 from tokens import *  # my owm tokens in another file
 from IndividualID import *
@@ -126,8 +127,9 @@ def talk(message):
 
     elif "онгоинг" in (str.lower(message.text)):
         anime = types.InlineKeyboardMarkup(row_width=2)
-        item1 = types.InlineKeyboardButton("Да", callback_data='yes')
-        item2 = types.InlineKeyboardButton("Нет", callback_data='no')
+        item1 = types.InlineKeyboardButton("Все", callback_data='all')
+        item2 = types.InlineKeyboardButton(
+            "Ввести значение", callback_data='choose')
 
         anime.add(item1, item2)
 
@@ -162,6 +164,21 @@ def prognoz(message):
     except:
         bot.send_message(
             message.chat.id, "Такого города не существуе, или я его ещё не знаю)\nПожалуйста введите другой город.")
+
+
+@bot.message_handler(content_types=['text'])
+def choose_page(message):
+    print("Id: " + str(message.from_user.id) + "\nFirst Name: " +
+          str(message.from_user.first_name) + "\nText: " + str(message.text) + "\n")
+    try:
+        answer = ''
+        for i in ongoing(int(message.text)):
+            answer = str(answer) + str(i) + str('\n')
+
+        bot.send_message(message.chat.id, answer)
+    except:
+        bot.send_message(
+            message.chat.id, "К сожалению нет страницы с таким номером.")
 
 
 @bot.callback_query_handler(func=lambda call: call.data == 'EN' or call.data == 'RU')
@@ -202,18 +219,30 @@ def calback_inline(call):
         print(repr(e))
 
 
-@bot.callback_query_handler(func=lambda call: call.data == 'yes' or call.data == 'no')
+@bot.callback_query_handler(func=lambda call: call.data == 'all' or call.data == 'choose')
 def calback_inline(call):
     try:
         if call.message:
-            if call.data == 'yes':
+            if call.data == 'all':
                 bot.send_message(call.message.chat.id, "Одну секунду ...")
 
-                for i in ongoing(1):
-                    bot.send_message(call.message.chat.id, i)
+                answer = ''
+                clock = 0
 
-            elif call.data == 'no':
-                bot.send_message(call.message.chat.id, "Ну ладно :(")
+                for i in ongoing_all(1):
+                    answer = str(answer) + str(i) + str('\n')
+                    clock = clock + 1
+                    if clock % 11 == 0:
+                        bot.send_message(call.message.chat.id, answer)
+                        clock = 1
+                        answer = ''
+                        sleep(2)
+
+                bot.send_message(call.message.chat.id, answer)
+
+            elif call.data == 'choose':
+                bot.register_next_step_handler(
+                    bot.send_message(call.message.chat.id, 'Введине номер страницы 1-8:'), choose_page)
 
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
                                   text="Показать список аниме онгоингов?", reply_markup=None)
