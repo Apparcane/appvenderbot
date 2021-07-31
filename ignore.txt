@@ -1,5 +1,0 @@
-IndividualID.py
-tokens.py
-.vscode
-*.pyc
-start.bat
