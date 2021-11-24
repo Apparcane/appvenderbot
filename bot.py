@@ -79,13 +79,13 @@ def talk(message):
     print("Id: " + str(message.from_user.id) + "\nFirst Name: " +
           str(message.from_user.first_name) + "\nText: " + str(message.text) + "\n")
 
-    if message.from_user.id == GayId:
-        if "ы" in (str.lower(message.text)) or "s" in (str.lower(message.text)) or "і" in (str.lower(message.text)):
-            bot.send_message(message.chat.id, "Соси яйца")
-
     if "привет" in (str.lower(message.text)) or "ку" in (str.lower(message.text)) or "куку" in (str.lower(message.text)) or "hello" in (str.lower(message.text)):
-        bot.send_message(
-            message.chat.id, "Привет {0.first_name}!".format(message.from_user))
+        if message.from_user.id == CreatorId:
+            bot.send_message(
+                message.chat.id, "Я рада видеть вас создатель))")
+        else:
+            bot.send_message(
+                message.chat.id, "Привет {0.first_name}!".format(message.from_user))
 
     elif "я" in (str.lower(message.text)) and "твой" in (str.lower(message.text)) and "создатель" in (str.lower(message.text)):
         if message.from_user.id == CreatorId:
