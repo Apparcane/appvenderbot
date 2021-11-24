@@ -1,2 +1,2 @@
 CreatorId = 650147497
-GayId = 980717677
+KurilId = 980717677
