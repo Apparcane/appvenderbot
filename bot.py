@@ -27,7 +27,7 @@ def commands(message):
     #lang = translator.detect(message.text)
     #res = translator.translate("У меня присутствуют такие команды как:", dest = lang.lang)
     bot.send_message(
-        message.chat.id, "У меня присутствуют такие команды как:\n1)/start(/go)\n2)/settings\n3)/help\n4)/weather\n5)/language")
+        message.chat.id, "У меня присутствуют такие команды как:\n1)/start(/go)\n2)/settings\n3)/help\n4)/weather\n5)/language\n6)/ongoing")
 
 
 @bot.message_handler(commands=['language'])
@@ -72,6 +72,12 @@ def weather(message):
     bot.register_next_step_handler(
         bot.send_message(message.chat.id, msg), prognoz)
 
+@bot.message_handler(commands=['ongoing'])
+def ongoing_commands(message):
+    print("Id: " + str(message.from_user.id) + "\nFirst Name: " +
+          str(message.from_user.first_name) + "\nText: " + str(message.text) + "\n")
+    bot.register_next_step_handler(
+                    bot.send_message(message.chat.id, 'Введине номер страницы 1-8:'), choose_page)
 
 @bot.message_handler(content_types=['text'])
 def talk(message):

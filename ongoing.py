@@ -35,9 +35,10 @@ def ongoing(pages):
     soup = BeautifulSoup(response.content, 'html.parser')
     names = soup.find_all('div', class_='shortstoryHead')
 
-    for el in names:
-        h = el.find('h2')
-        name = h.find('a')
-        res.append(name.text + '\n')
+    if(len(names)):
+        for el in names:
+            h = el.find('h2')
+            name = h.find('a')
+            res.append(name.text + '\n')
 
     return res
