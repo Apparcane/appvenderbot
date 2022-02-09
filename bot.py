@@ -5,10 +5,41 @@ from telebot import types
 from tokens import *  # my owm tokens in another file
 from IndividualID import *
 from ongoing import *
+import json
 
 owm = pyowm.OWM(owm_token)
 bot = telebot.TeleBot(bot_token)  # @appvenderbot
 
+@bot.message_handler(commands=['start', 'go'])
+def start(message):
+
+    with open('./json/data.json', 'r+', encoding = 'utf-8') as data_file:   
+        users = json.load(data_file)
+        for p in users['user']:
+            i = p['nums'] + 1
+
+    for p in users['user']:
+        if message.from_user.username != p['username'] or message.chat.id != p['chat_id']:
+
+            with open('./json/data.json', 'w+', encoding = 'utf-8') as data_file:
+                users['user'].append({
+                    'nums' : i,
+                    'username' : message.from_user.username,
+                    'chat_id' : message.chat.id,
+                    'first_name' : message.from_user.first_name,
+                    'last_name' : message.from_user.last_name
+                })
+
+                json.dump(users, data_file, indent = 4)
+
+
+    # print(message)
+    print("Id: " + str(message.from_user.id) + "\nFirst Name: " +
+          str(message.from_user.first_name) + "\nText: " + str(message.text) + "\n")
+    bot.send_message(message.chat.id, "Привет {0.first_name}!".format(
+        message.from_user), parse_mode='HTML')
+    bot.send_message(
+        message.chat.id, "Я <b>Пинки</b>, приятно познакомится)", parse_mode='HTML')
 
 @bot.message_handler(commands=['settings'])
 def settings(message):
@@ -43,17 +74,6 @@ def commands(message):
 
     bot.send_message(
         message.chat.id, "На каком языке вам удобнее общатся?", reply_markup=markuplang)
-
-
-@bot.message_handler(commands=['start', 'go'])
-def start(message):
-    print("Id: " + str(message.from_user.id) + "\nFirst Name: " +
-          str(message.from_user.first_name) + "\nText: " + str(message.text) + "\n")
-    bot.send_message(message.chat.id, "Привет {0.first_name}!".format(
-        message.from_user), parse_mode='HTML')
-    bot.send_message(
-        message.chat.id, "Я <b>Пинки</b>, приятно познакомится)", parse_mode='HTML')
-
 
 @bot.message_handler(commands=['help'])
 def help(message):
