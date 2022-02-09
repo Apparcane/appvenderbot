@@ -15,22 +15,36 @@ def start(message):
 
     with open('./json/data.json', 'r+', encoding = 'utf-8') as data_file:   
         users = json.load(data_file)
+
+    if users != {}:
         for p in users['user']:
             i = p['nums'] + 1
 
-    for p in users['user']:
-        if message.from_user.username != p['username'] or message.chat.id != p['chat_id']:
+        for p in users['user']:
+            if message.from_user.username != p['username'] or message.chat.id != p['chat_id']:
 
-            with open('./json/data.json', 'w+', encoding = 'utf-8') as data_file:
-                users['user'].append({
-                    'nums' : i,
-                    'username' : message.from_user.username,
-                    'chat_id' : message.chat.id,
-                    'first_name' : message.from_user.first_name,
-                    'last_name' : message.from_user.last_name
-                })
+                with open('./json/data.json', 'w+', encoding = 'utf-8') as data_file:
+                    users['user'].append({
+                        'nums' : i,
+                        'username' : message.from_user.username,
+                        'chat_id' : message.chat.id,
+                        'first_name' : message.from_user.first_name,
+                        'last_name' : message.from_user.last_name
+                    })
 
-                json.dump(users, data_file, indent = 4)
+                    json.dump(users, data_file, indent = 4)
+
+    else:
+        with open('./json/data.json', 'w+', encoding = 'utf-8') as data_file:
+            users['user'].append({
+                'nums' : 1,
+                'username' : message.from_user.username,
+                'chat_id' : message.chat.id,
+                'first_name' : message.from_user.first_name,
+                'last_name' : message.from_user.last_name
+            })
+
+            json.dump(users, data_file, indent = 4)
 
 
     # print(message)
