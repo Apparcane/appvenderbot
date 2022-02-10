@@ -12,27 +12,31 @@ bot = telebot.TeleBot(bot_token)  # @appvenderbot
 
 @bot.message_handler(commands=['start', 'go'])
 def start(message):
-
+    
+    copy = 0
     with open('./json/data.json', 'r+', encoding = 'utf-8') as data_file:   
         users = json.load(data_file)
 
     if users != {}:
         for p in users['user']:
-            i = p['nums'] + 1
+            index = p['nums'] + 1
 
         for p in users['user']:
-            if message.from_user.username != p['username'] or message.chat.id != p['chat_id']:
+            if message.chat.id == p['chat_id']:
+                copy = 1
+                break
 
-                with open('./json/data.json', 'w+', encoding = 'utf-8') as data_file:
-                    users['user'].append({
-                        'nums' : i,
-                        'username' : message.from_user.username,
-                        'chat_id' : message.chat.id,
-                        'first_name' : message.from_user.first_name,
-                        'last_name' : message.from_user.last_name
-                    })
+        if copy == 0:
+            with open('./json/data.json', 'w+', encoding = 'utf-8') as data_file:
+                users['user'].append({
+                    'nums' : index,
+                    'username' : message.from_user.username,
+                    'chat_id' : message.chat.id,
+                    'first_name' : message.from_user.first_name,
+                    'last_name' : message.from_user.last_name
+                })
 
-                    json.dump(users, data_file, indent = 4)
+                json.dump(users, data_file, indent = 4)            
 
     else:
         with open('./json/data.json', 'w+', encoding = 'utf-8') as data_file:
@@ -47,7 +51,7 @@ def start(message):
             json.dump(users, data_file, indent = 4)
 
 
-    # print(message)
+    # print(message.chat.id)
     print("Id: " + str(message.from_user.id) + "\nFirst Name: " +
           str(message.from_user.first_name) + "\nText: " + str(message.text) + "\n")
     bot.send_message(message.chat.id, "Привет {0.first_name}!".format(
